@@ -1,0 +1,15 @@
+C:\Users\villi\source\repos\ChemSolver\ChemSolver\bin\Debug\net6.0\ChemSolver.exe
+C:\Users\villi\source\repos\ChemSolver\ChemSolver\bin\Debug\net6.0\ChemSolver.deps.json
+C:\Users\villi\source\repos\ChemSolver\ChemSolver\bin\Debug\net6.0\ChemSolver.runtimeconfig.json
+C:\Users\villi\source\repos\ChemSolver\ChemSolver\bin\Debug\net6.0\ChemSolver.dll
+C:\Users\villi\source\repos\ChemSolver\ChemSolver\bin\Debug\net6.0\ChemSolver.pdb
+C:\Users\villi\source\repos\ChemSolver\ChemSolver\obj\Debug\net6.0\ChemSolver.csproj.AssemblyReference.cache
+C:\Users\villi\source\repos\ChemSolver\ChemSolver\obj\Debug\net6.0\ChemSolver.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\villi\source\repos\ChemSolver\ChemSolver\obj\Debug\net6.0\ChemSolver.AssemblyInfoInputs.cache
+C:\Users\villi\source\repos\ChemSolver\ChemSolver\obj\Debug\net6.0\ChemSolver.AssemblyInfo.cs
+C:\Users\villi\source\repos\ChemSolver\ChemSolver\obj\Debug\net6.0\ChemSolver.csproj.CoreCompileInputs.cache
+C:\Users\villi\source\repos\ChemSolver\ChemSolver\obj\Debug\net6.0\ChemSolver.dll
+C:\Users\villi\source\repos\ChemSolver\ChemSolver\obj\Debug\net6.0\refint\ChemSolver.dll
+C:\Users\villi\source\repos\ChemSolver\ChemSolver\obj\Debug\net6.0\ChemSolver.pdb
+C:\Users\villi\source\repos\ChemSolver\ChemSolver\obj\Debug\net6.0\ChemSolver.genruntimeconfig.cache
+C:\Users\villi\source\repos\ChemSolver\ChemSolver\obj\Debug\net6.0\ref\ChemSolver.dll
