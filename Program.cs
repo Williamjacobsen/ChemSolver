@@ -14,7 +14,7 @@ namespace ChemSolver
                     Chemistry.Redox();
                     break;
                 case 1:
-                    Chemistry.OxidationValue();
+                    Chemistry.OxidationValue(showValue: true);
                     break;
             }
         }
@@ -89,7 +89,7 @@ namespace ChemSolver
             return n.Length != 0 ? Convert.ToInt32(n) : 0;
         }
 
-        public static int OxidationValue()
+        public static int OxidationValue(bool showValue)
         {
             Console.Clear();
             Console.WriteLine(@"            ) (`-.             _ .-') _     ('-.     .-') _                            .-') _   .-')    .-') _      ('-.                    
@@ -135,34 +135,19 @@ namespace ChemSolver
             int c = 0;
             if (charge == 0)
             {
-                if (val == 0)
-                {
-                    c = 0;
-                }
-                else
+                if (val != 0)
                 {
                     c = -val;
                 }
             }
-            else if (charge > val)
+            else
             {
-                for (int i = val; i < charge; i++)
-                {
-                    if (charge == val + i)
-                    {
-                        c = i;
-                    }
-                }
-            } 
-            else 
+                c = charge - val;
+            }
+            
+            if (showValue)
             {
-                for (int i = val; i > charge; i--)
-                {
-                    if (charge == val + i)
-                    {
-                        c = i;
-                    }
-                }
+                Console.WriteLine("Oxidationstal: " + c);
             }
             
             return c;
@@ -209,6 +194,17 @@ namespace ChemSolver
 
             string[] r1Split = r1.Split('+');
             string[] r2Split = r2.Split('+');
+
+            if (r1Split.Length != r2Split.Length)
+            {
+                Console.WriteLine("ERROR: Not equal lengths...");
+                return;
+            }
+
+            for (int i = 0; i < r1Split.Length; i++)
+            {
+                // get oxidation values for r1                
+            }
         }
     }
 
@@ -233,13 +229,15 @@ namespace ChemSolver
 (_'  '--'\ |  | |  | |  `---.|  |   |  | \       /   `'  '-'  ' |      |    \   /     |  `---.|  |\  \       
    `-----' `--' `--' `------'`--'   `--'  `-----'      `-----'  `------'     `-'      `------'`--' '--'      
 Made by: TacK & Soren
+
+Use up arrow, down arrow and enter to navigate.
 ");
         }
         public static int Menu(string[] arr)
         {
-            bool loop = true;
             int cur = 0;
             
+            bool loop = true;
             while (loop)
             {
                 Intro();
