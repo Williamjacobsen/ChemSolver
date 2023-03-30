@@ -14,7 +14,7 @@ namespace ChemSolver
                     Chemistry.Redox();
                     break;
                 case 1:
-                    Chemistry.OxidationValue(showValue: true);
+                    Chemistry.OxidationValue(showValue: true, molecule: "");
                     break;
             }
         }
@@ -72,7 +72,12 @@ namespace ChemSolver
                         bool loop = true;
                         while (loop)
                         {
-                            if (Int32.TryParse(m[i + j].ToString(), out _))
+                            if (m[i + j] == '-')
+                            {
+                                n += m[i + j].ToString();
+                                j++;
+                            }
+                            else if (Int32.TryParse(m[i + j].ToString(), out _))
                             {
                                 n += m[i + j].ToString();
                                 j++;
@@ -89,25 +94,43 @@ namespace ChemSolver
             return n.Length != 0 ? Convert.ToInt32(n) : 0;
         }
 
-        public static int OxidationValue(bool showValue)
+        public static int OxidationValue(bool showValue, string molecule)
         {
-            Console.Clear();
-            Console.WriteLine(@"            ) (`-.             _ .-') _     ('-.     .-') _                            .-') _   .-')    .-') _      ('-.                    
-             ( OO ).          ( (  OO) )   ( OO ).-.(  OO) )                          ( OO ) ) ( OO ). (  OO) )    ( OO ).-.                
- .-'),-----.(_/.  \_)-. ,-.-') \     .'_   / . --. //     '._ ,-.-')  .-'),-----. ,--./ ,--,' (_)---\_)/     '._   / . --. / ,--.           
-( OO'  .-.  '\  `.'  /  |  |OO),`'--..._)  | \-.  \ |'--...__)|  |OO)( OO'  .-.  '|   \ |  |\ /    _ | |'--...__)  | \-.  \  |  |.-')       
-/   |  | |  | \     /\  |  |  \|  |  \  '.-'-'  |  |'--.  .--'|  |  \/   |  | |  ||    \|  | )\  :` `. '--.  .--'.-'-'  |  | |  | OO )      
-\_) |  |\|  |  \   \ |  |  |(_/|  |   ' | \| |_.'  |   |  |   |  |(_/\_) |  |\|  ||  .     |/  '..`''.)   |  |    \| |_.'  | |  |`-' |      
-  \ |  | |  | .'    \_),|  |_.'|  |   / :  |  .-.  |   |  |  ,|  |_.'  \ |  | |  ||  |\    |  .-._)   \   |  |     |  .-.  |(|  '---.'      
-   `'  '-'  '/  .'.  \(_|  |   |  '--'  /  |  | |  |   |  | (_|  |      `'  '-'  '|  | \   |  \       /   |  |     |  | |  | |      |       
-     `-----''--'   '--' `--'   `-------'   `--' `--'   `--'   `--'        `-----' `--'  `--'   `-----'    `--'     `--' `--' `------'       
- Use _ to lower a value and ^ to upper a value
- Also note that the expression will look something like this: 
- NO_3^-1
- Notice how postive values such as Mn^2, is not +2 but just 2
- ");
-            Console.Write("Molekyle: ");
-            string? m = Console.ReadLine();
+            /*
+                todo:
+                    when H or O is alone, it should not have an oxidation value
+            */
+
+            if (molecule == "")
+            {
+                Console.Clear();
+                Console.WriteLine(@"            ) (`-.             _ .-') _     ('-.     .-') _                            .-') _   .-')    .-') _      ('-.                    
+                ( OO ).          ( (  OO) )   ( OO ).-.(  OO) )                          ( OO ) ) ( OO ). (  OO) )    ( OO ).-.                
+    .-'),-----.(_/.  \_)-. ,-.-') \     .'_   / . --. //     '._ ,-.-')  .-'),-----. ,--./ ,--,' (_)---\_)/     '._   / . --. / ,--.           
+    ( OO'  .-.  '\  `.'  /  |  |OO),`'--..._)  | \-.  \ |'--...__)|  |OO)( OO'  .-.  '|   \ |  |\ /    _ | |'--...__)  | \-.  \  |  |.-')       
+    /   |  | |  | \     /\  |  |  \|  |  \  '.-'-'  |  |'--.  .--'|  |  \/   |  | |  ||    \|  | )\  :` `. '--.  .--'.-'-'  |  | |  | OO )      
+    \_) |  |\|  |  \   \ |  |  |(_/|  |   ' | \| |_.'  |   |  |   |  |(_/\_) |  |\|  ||  .     |/  '..`''.)   |  |    \| |_.'  | |  |`-' |      
+    \ |  | |  | .'    \_),|  |_.'|  |   / :  |  .-.  |   |  |  ,|  |_.'  \ |  | |  ||  |\    |  .-._)   \   |  |     |  .-.  |(|  '---.'      
+    `'  '-'  '/  .'.  \(_|  |   |  '--'  /  |  | |  |   |  | (_|  |      `'  '-'  '|  | \   |  \       /   |  |     |  | |  | |      |       
+        `-----''--'   '--' `--'   `-------'   `--' `--'   `--'   `--'        `-----' `--'  `--'   `-----'    `--'     `--' `--' `------'       
+    Use _ to lower a value and ^ to upper a value
+    Also note that the expression will look something like this: 
+    NO_3^-1
+    Notice how postive values such as Mn^2, is not +2 but just 2
+    ");
+                Console.Write("Molekyle: ");
+            }
+
+            string? m;
+            if (molecule == "")
+            {
+                m = Console.ReadLine();
+            }
+            else
+            {
+                m = molecule;
+            }
+            
 
             if (m == null) 
             {
@@ -132,26 +155,60 @@ namespace ChemSolver
 
             int charge = Charge(m);
 
-            int c = 0;
-            if (charge == 0)
-            {
-                if (val != 0)
-                {
-                    c = -val;
-                }
-            }
-            else
-            {
-                c = charge - val;
-            }
+            int c = charge - val;
             
             if (showValue)
             {
                 Console.WriteLine("Oxidationstal: " + c);
             }
-            
+
             return c;
         }
+
+        private static List<int> ReverseList(List<int> list)
+        {
+            List<int> tmpList = new List<int>();
+            for (int i = list.Count - 1; i >= 0; i--)
+            {
+                tmpList.Add(list[i]);
+            }
+            return tmpList;
+        }
+        
+        private static Tuple<string[], string[]> ElectronicAccounting(List<int> r1OxidationValues, List<int> r2OxidationValues, string[] r1Split, string[] r2Split)
+        {
+            List<int> change = new List<int>();
+            int tmp;
+
+            for (int i = 0; i < r1OxidationValues.Count; i++)
+            {
+                tmp = r1OxidationValues[i] - r2OxidationValues[i];
+                if (tmp < 0)
+                {
+                    tmp = -tmp;
+                }
+                change.Add(tmp);
+            }
+
+            change = ReverseList(change);
+
+            for (int i = 0; i < change.Count; i++)
+            {
+                if (change[i] == 0 || change[i] == 1)
+                    continue;
+                r1Split[i] = change[i] + r1Split[i];
+            }
+
+            for (int i = 0; i < change.Count; i++)
+            {
+                if (change[i] == 0 || change[i] == 1)
+                    continue;
+                r2Split[i] = change[i] + r2Split[i];
+            }
+
+            return Tuple.Create(r1Split, r2Split);
+        } 
+
         public static void Redox()
         {
             Console.Clear();
@@ -179,7 +236,7 @@ namespace ChemSolver
             for (int i = 0; i < r?.Length; i++)
             {
                 if (r[i] == '>' || r[i] == ' ') {}
-                else if (r[i] == '-' && r[i+1] == '>')
+                else if (r[i] == '-' && r[i+1] == '>') 
                 {
                     sep = true;
                 }
@@ -201,9 +258,27 @@ namespace ChemSolver
                 return;
             }
 
+            List<int> r1OxidationValues = new List<int>();
+            List<int> r2OxidationValues = new List<int>();
+
             for (int i = 0; i < r1Split.Length; i++)
             {
-                // get oxidation values for r1                
+                r1OxidationValues.Add(OxidationValue(showValue: false, molecule: r1Split[i]));
+            }
+
+            for (int i = 0; i < r2Split.Length; i++)
+            {
+                r2OxidationValues.Add(OxidationValue(showValue: false, molecule: r2Split[i]));
+            }
+
+            Tuple<string[], string[]> tmpTuple = ElectronicAccounting(r1OxidationValues, r2OxidationValues, r1Split, r2Split);
+            r1Split = tmpTuple.Item1;
+            r2Split = tmpTuple.Item2;
+
+            for (int i = 0; i < r1Split.Length; i++)
+            {
+                Console.WriteLine(r1Split[i]);
+                Console.WriteLine(r2Split[i]);
             }
         }
     }
@@ -249,7 +324,7 @@ Use up arrow, down arrow and enter to navigate.
                     ResetConsole();
                 }
 
-                System.ConsoleKey choice = Console.ReadKey(true).Key;
+                ConsoleKey choice = Console.ReadKey(true).Key;
                 switch (choice.ToString())
                 {
                     case "Enter":
