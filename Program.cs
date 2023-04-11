@@ -134,7 +134,7 @@ namespace ChemSolver
             bool loop = true;
             while (loop)
             {
-                int idx = InteractivePeriodicTable(options: table, length:  18);
+                int idx = InteractivePeriodicTable(options: table, length: 18);
                 if (idx == 999)
                 {
                     loop = false;
