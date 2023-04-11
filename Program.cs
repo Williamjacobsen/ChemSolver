@@ -1,4 +1,5 @@
-﻿using System;
+﻿using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace ChemSolver
 {
@@ -6,14 +7,17 @@ namespace ChemSolver
     {   
         static void Main(string[] args)
         {
-            Console.SetWindowSize(150, 30);
+            Console.SetWindowSize(200, 50);
 
-            int option = UI.Menu(new string[] {"Redox reaktion", "Oxidationstal"});
+            int option = UI.Menu(new string[] {"Periodic Table", "Redox reaktion", "Oxidationstal"});
             switch (option) {
                 case 0:
-                    Chemistry.Redox();
+                    Chemistry.PeriodicTable();
                     break;
                 case 1:
+                    Chemistry.Redox();
+                    break;
+                case 2:
                     Chemistry.OxidationValue(showValue: true, molecule: "");
                     break;
             }
@@ -22,6 +26,137 @@ namespace ChemSolver
 
     internal class Chemistry
     {
+        private static int InteractivePeriodicTable(string[] options, int length)
+        {
+            int cur = 1;
+            bool loop = true;
+            while (loop)
+            {
+                Console.Clear();
+                Console.WriteLine(@"   _ (`-.    ('-.  _  .-')                       _ .-') _                            .-') _      ('-.    .-. .-')               ('-.        
+  ( (OO  ) _(  OO)( \( -O )                     ( (  OO) )                          (  OO) )    ( OO ).-.\  ( OO )            _(  OO)       
+ _.`     \(,------.,------.  ,-.-')  .-'),-----. \     .'_   ,-.-')   .-----.       /     '._   / . --. / ;-----.\  ,--.     (,------.      
+(__...--'' |  .---'|   /`. ' |  |OO)( OO'  .-.  ',`'--..._)  |  |OO) '  .--./       |'--...__)  | \-.  \  | .-.  |  |  |.-')  |  .---'      
+ |  /  | | |  |    |  /  | | |  |  \/   |  | |  ||  |  \  '  |  |  \ |  |('-.       '--.  .--'.-'-'  |  | | '-' /_) |  | OO ) |  |          
+ |  |_.' |(|  '--. |  |_.' | |  |(_/\_) |  |\|  ||  |   ' |  |  |(_//_) |OO  )         |  |    \| |_.'  | | .-. `.  |  |`-' |(|  '--.       
+ |  .___.' |  .--' |  .  '.',|  |_.'  \ |  | |  ||  |   / : ,|  |_.'||  |`-'|          |  |     |  .-.  | | |  \  |(|  '---.' |  .--'       
+ |  |      |  `---.|  |\  \(_|  |      `'  '-'  '|  '--'  /(_|  |  (_'  '--'\          |  |     |  | |  | | '--'  / |      |  |  `---.      
+ `--'      `------'`--' '--' `--'        `-----' `-------'   `--'     `-----'          `--'     `--' `--' `------'  `------'  `------'      
+ ");
+                for (int i = 0; i < options.Length; i++)
+                {
+                    Console.BackgroundColor = cur == i ? ConsoleColor.White : ConsoleColor.Black;
+                    Console.ForegroundColor = cur == i ? ConsoleColor.Black : ConsoleColor.White;
+                    Console.Write(i != 0 ? options[i] + " " : options[i]);
+                    Console.Write(i % length == 0 && i != 0 ? "\n" : "");
+                    Console.ResetColor();
+                }
+
+                ConsoleKey choice = Console.ReadKey(true).Key;
+                switch (choice.ToString())
+                {
+                    case "Enter":
+                        loop = false;
+                        break;
+                    case "DownArrow":
+                        if (
+                            cur + length > options.Length ||
+                            options[cur + length] == "> " ||
+                            options[cur + length] == "| " ||
+                            options[cur + length] == " " ||
+                            options[cur + length] == "  " ||
+                            options[cur + length] == ""
+                        )
+                        {
+                            continue;
+                        }
+                        cur += length;
+                        break;
+                    case "UpArrow":
+                        if (
+                            cur - length < 0 ||
+                            options[cur - length] == " " ||
+                            options[cur - length] == "  " ||
+                            options[cur - length] == ""
+                        )
+                        {
+                            continue; 
+                        }
+                        cur -= length;
+                        break;
+                    case "RightArrow":
+                        if (
+                            cur + 1 > options.Length ||
+                            options[cur + 1] == " " ||
+                            options[cur + 1] == "  " ||
+                            options[cur + 1] == "| " ||
+                            options[cur + 1] == "> "
+                        )
+                        {
+                            continue;
+                        }
+                        cur += 1;
+                        break;
+                    case "LeftArrow":
+                        if (
+                            cur - 1 < 1 ||
+                            options[cur - 1] == "" ||
+                            options[cur - 1] == " " ||
+                            options[cur - 1] == "  " ||
+                            options[cur - 1] == "| " ||
+                            options[cur - 1] == "> "
+                        )
+                        {
+                            continue;
+                        }
+                        cur -= 1;
+                        break;
+                    case "Escape":
+                    	return 999;
+                }
+            }
+            return cur;
+        }
+        public static void PeriodicTable()
+        {
+            string[] table = {
+                "", "H ", "  ", "  ", "  ", "  ", "  ", "  ", "  ", "  ", "    ", "   ", "   ", "  ", " ", " ", " ", " ", "He",
+                "Li", "Be", "  ", "  ", "  ", "  ", "  ", "  ", " ", " ", "     ", " ", "B ", "C ", "N ", "O ", "F ", "Ne",
+                "Na", "Mg", "  ", "  ", "  ", "  ", "  ", "  ", " ", " ", "     ", " ", "Al", "Si", "P ", "S ", "Cl", "Ar",
+                "K ", "Ca", "Sc", "Ti", "V ", "Cr", "Mn", "Fe", "Co", "Ni", "Cu", "Zn", "Ga", "Ge", "As", "Se", "Br", "Kr",
+                "Rb", "Sr", "Y ", "Zr", "Nb", "Mo", "Tc", "Ru", "Rh", "Pd", "Ag", "Cd", "In", "Sn", "Sb", "Te", "I ", "Xe",
+                "Cs", "Ba", "| ", "Hf", "Ta", "W ", "Re", "Os", "Ir", "Pt", "Au", "Hg", "Tl", "Pb", "Bi", "Po", "At", "Rn",
+                "Fr", "Ra", "| ", "Rf", "Db", "Sg", "Bh", "Hs", "Mt", "Ds", "Rg", "Cn", "Nh", "Fl", "Mc", "Lv", "Ts", "Og",
+                "  ", "  ", "> ", "La", "Ce", "Pr", "Nd", "Pm", "Sm", "Eu", "Gd", "Tb", "Dy", "Ho", "Er", "Tm", "Yb", "Lu",
+                "  ", "  ", "> ", "Ac", "Th", "Pa", "U ", "Np", "Pu", "Am", "Cm", "Bk", "Cf", "Es", "Fm", "Md", "No", "Lr"
+            };
+            
+            bool loop = true;
+            while (loop)
+            {
+                int idx = InteractivePeriodicTable(options: table, length:  18);
+                if (idx == 999)
+                {
+                    loop = false;
+                    continue;
+                }
+                string chosenElement = table[idx];
+                chosenElement = UI.RemoveSpaces(chosenElement);
+
+                List<JsonElement> elements = JsonHandler.ReadJson(filename: "PeriodicTable.json");
+                for (int i = 0; i < elements.Count; i++)
+                {
+                    JsonNode jsonObject = JsonNode.Parse(elements[i].ToString())!.AsObject();
+                    if (jsonObject["symbol"]?.ToString() == chosenElement)
+                    {
+                        Console.Clear();
+                        Console.WriteLine(jsonObject);
+                    }
+                }
+
+                Console.ReadKey();
+            }
+        }
         private static int loweredValue(string m, int i, int val, int updateVal)
         {
             int _;
@@ -283,16 +418,26 @@ namespace ChemSolver
         }
     }
 
+    internal class JsonHandler
+    {
+        public static List<JsonElement> ReadJson(string filename)
+        {
+            List<JsonElement> elements = new List<JsonElement>();
+            FileStream file = File.OpenRead(filename);
+            JsonElement json = JsonDocument.Parse(file).RootElement;
+            foreach (JsonElement element in json.EnumerateArray())
+            {
+                elements.Add(element);
+            }
+            return elements;
+        }
+    }
+
     internal class UI
     {
-        public static void ResetConsole()
-        {
-            Console.BackgroundColor = ConsoleColor.Black;
-            Console.ForegroundColor = ConsoleColor.Gray;
-        }
         public static void Intro()
         {
-            UI.ResetConsole();
+            Console.ResetColor();
             Console.Clear();
             Console.WriteLine(@"            ('-. .-.   ('-.  _   .-')      .-')                               (`-.      ('-.  _  .-')        
            ( OO )  / _(  OO)( '.( OO )_   ( OO ).                           _(OO  )_  _(  OO)( \( -O )       
@@ -321,7 +466,7 @@ Use up arrow, down arrow and enter to navigate.
                     Console.BackgroundColor = cur == i ? ConsoleColor.White : ConsoleColor.Black;
                     Console.ForegroundColor = cur == i ? ConsoleColor.Black : ConsoleColor.White;
                     Console.WriteLine(cur == i ? $"> {arr[i]}" : $"{arr[i]}");
-                    ResetConsole();
+                    Console.ResetColor();
                 }
 
                 ConsoleKey choice = Console.ReadKey(true).Key;
@@ -339,6 +484,19 @@ Use up arrow, down arrow and enter to navigate.
                 }
             }
             return cur;
+        }
+
+        public static string RemoveSpaces(string str)
+        {
+            string tmp = "";
+            for (int i = 0; i < str.Length; i++)
+            {
+                if (str[i].ToString() != " ")
+                {
+                    tmp += str[i];
+                }
+            }
+            return tmp;
         }
     }
 }
