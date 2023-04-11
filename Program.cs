@@ -146,7 +146,7 @@ namespace ChemSolver
                 List<JsonElement> elements = JsonHandler.ReadJson(filename: "PeriodicTable.json");
                 for (int i = 0; i < elements.Count; i++)
                 {
-                    JsonNode jsonObject = JsonNode.Parse(elements[i].ToString())!.AsObject();
+                    JsonNode jsonObject = JsonHandler.ParseJson(elements[i].ToString());
                     if (jsonObject["symbol"]?.ToString() == chosenElement)
                     {
                         Console.Clear();
@@ -430,6 +430,11 @@ namespace ChemSolver
                 elements.Add(element);
             }
             return elements;
+        }
+
+        public static JsonNode ParseJson(string el)
+        {
+            return JsonNode.Parse(el)!.AsObject();
         }
     }
 
