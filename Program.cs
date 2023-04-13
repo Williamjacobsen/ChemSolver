@@ -26,6 +26,7 @@ namespace ChemSolver
 
     internal class Chemistry
     {
+        private static List<JsonElement> PeriodicTableElements = new List<JsonElement>();
         private static int InteractivePeriodicTable(string[] options, int length)
         {
             int cur = 1;
@@ -143,10 +144,10 @@ namespace ChemSolver
                 string chosenElement = table[idx];
                 chosenElement = UI.RemoveSpaces(chosenElement);
 
-                List<JsonElement> elements = JsonHandler.ReadJson(filename: "PeriodicTable.json");
-                for (int i = 0; i < elements.Count; i++)
+                PeriodicTableElements = JsonHandler.ReadJson(filename: "PeriodicTable.json");
+                for (int i = 0; i < PeriodicTableElements.Count; i++)
                 {
-                    JsonNode jsonObject = JsonHandler.ParseJson(elements[i].ToString());
+                    JsonNode jsonObject = JsonHandler.ParseJson(PeriodicTableElements[i].ToString());
                     if (jsonObject["symbol"]?.ToString() == chosenElement)
                     {
                         Console.Clear();
@@ -229,13 +230,43 @@ namespace ChemSolver
             return n.Length != 0 ? Convert.ToInt32(n) : 0;
         }
 
+        private static bool IsAtom(string atom)
+        {
+            if (atom.Length == 0) return false;
+            List<string> atoms = new List<string>();
+            bool prevUpper = false;
+            string tmpAtom = "";
+            for (int i = 0; i < atom.Length; i++)
+            {
+                if (atom[i].ToString() == atom[i].ToString().ToUpper())
+                {
+                    if (prevUpper)
+                    {
+                        atoms.Add(tmpAtom);
+                    }
+                    tmpAtom += atom[i];
+                    prevUpper = true;
+                }
+                else
+                {
+                    atoms.Add(tmpAtom + atom[i]);
+                    prevUpper = false;
+                }
+
+            }
+            bool state = false;
+            for (int i = 0; i < atoms.Count; i++)
+            {
+                if (atoms[i] != "H" && atoms[i] != "O")
+                {
+                    state = true;
+                }
+            }
+            return state;
+        }
+
         public static int OxidationValue(bool showValue, string molecule)
         {
-            /*
-                todo:
-                    when H or O is alone, it should not have an oxidation value
-            */
-
             if (molecule == "")
             {
                 Console.Clear();
@@ -255,7 +286,6 @@ namespace ChemSolver
     ");
                 Console.Write("Molekyle: ");
             }
-
             string? m;
             if (molecule == "")
             {
@@ -266,9 +296,14 @@ namespace ChemSolver
                 m = molecule;
             }
             
-
             if (m == null) 
             {
+                return 0;
+            }
+
+            if (!IsAtom(m))
+            {
+                Console.WriteLine("Atom is not valid.");
                 return 0;
             }
 
@@ -415,6 +450,16 @@ namespace ChemSolver
                 Console.WriteLine(r1Split[i]);
                 Console.WriteLine(r2Split[i]);
             }
+
+            /*
+                Todo:
+                    Afstem Negativiteten:
+                        Basisk Opløsning:
+                            OH^-1
+                        Sur Opløsning:
+                            H^1
+                        Afstem Det Sidste Med H_2O
+            */
         }
     }
 
