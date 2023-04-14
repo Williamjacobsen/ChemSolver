@@ -230,6 +230,16 @@ namespace ChemSolver
             return n.Length != 0 ? Convert.ToInt32(n) : 0;
         }
 
+        private static int GetMultiplier(string m)
+        {
+            int _;
+            if (Int32.TryParse(m[0].ToString(), out _))
+            {
+                return Convert.ToInt32(m[0].ToString());
+            }
+            return 1;
+        }
+
         private static bool IsAtom(string atom)
         {
             if (atom.Length == 0) return false;
@@ -377,7 +387,12 @@ namespace ChemSolver
             }
 
             return Tuple.Create(r1Split, r2Split);
-        } 
+        }
+
+        private static void BalanceCharges(string r1, string r2, int r1Charge, int r2Charge)
+        {
+            // get if basic or acidic solution
+        }
 
         public static void Redox()
         {
@@ -399,6 +414,7 @@ namespace ChemSolver
  ");
             Console.Write("Reaktion: ");
             string? r = Console.ReadLine();
+            r = "MnO_4^-1 + NO_2^-1 -> MnO_2 + NO_3^-1";
 
             bool sep = false;
             string r1 = "";
@@ -445,10 +461,15 @@ namespace ChemSolver
             r1Split = tmpTuple.Item1;
             r2Split = tmpTuple.Item2;
 
+            int r1Charge = 0;
+            int r2Charge = 0;
             for (int i = 0; i < r1Split.Length; i++)
             {
-                Console.WriteLine(r1Split[i]);
-                Console.WriteLine(r2Split[i]);
+                r1Charge += GetMultiplier(r1Split[i]) * Charge(r1Split[i]);
+            }
+            for (int i = 0; i < r2Split.Length; i++)
+            {
+                r2Charge +=  GetMultiplier(r2Split[i]) * Charge(r2Split[i]);
             }
 
             /*
@@ -458,6 +479,7 @@ namespace ChemSolver
                             OH^-1
                         Sur Opløsning:
                             H^1
+                        - Ladning
                         Afstem Det Sidste Med H_2O
             */
         }
