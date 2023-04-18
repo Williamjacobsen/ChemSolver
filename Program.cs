@@ -194,6 +194,42 @@ namespace ChemSolver
             }
             return val;
         }
+
+        private static int GetLoweredValue(string m, int i)
+        {
+            string tmp = "";
+            int _;
+            try
+            {
+                if (m[i + 1] == '_')
+                {
+                    for (int j = 2; j < m.Length; j++)
+                    {
+                        if (Int32.TryParse(m[i + j].ToString(), out _))
+                        {
+                            tmp += m[i + j].ToString();
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    return 1;
+                }
+            } 
+            catch (Exception) {
+                if (tmp == "")
+                {
+                    return 1;
+                }
+            }
+
+            return Convert.ToInt32(tmp);
+        }
+
         private static int Charge(string m)
         {
             int _;
@@ -284,13 +320,62 @@ namespace ChemSolver
             return Tuple.Create(_r1.Split(" "), _r2.Split(" "));
         }
 
+        private static int CountAtoms(string m, char atom)
+        {
+            int tmp = 0;
+            for (int i = 0; i < m.Length; i++)
+            {
+                if (m[i] == atom)
+                {
+                    tmp += GetMultiplier(m) * GetLoweredValue(m, i);
+                }
+            }
+            return tmp;
+        }
+
         private static Tuple<string[], string[]> OH_Accounting(string[] r1, string[] r2)
         {
             string _r1 = ArrayToString(r1);
             string _r2 = ArrayToString(r2);
-            Console.WriteLine(_r1);
-            Console.WriteLine(_r2);
+
+            int[] CountO = {0, 0};
+            int[] CountH = {0, 0};
+
+            for (int i = 0; i < r1.Length; i++)
+            {
+                CountO[0] += CountAtoms(r1[i], 'O');
+                CountH[0] += CountAtoms(r1[i], 'H');
+            }
+            for (int i = 0; i < r2.Length; i++)
+            {
+                CountO[1] += CountAtoms(r2[i], 'O');
+                CountH[1] += CountAtoms(r2[i], 'H');
+            }
+
+            // O: 14, 13
+            // H: 2, 0
             
+            while (CountO[0] != CountO[1])
+            {
+                if (CountO[0] < CountO[1])
+                {
+                    _r1 += " " + (CountO[1] - CountO[0] > 1 ? CountO[1] - CountO[0] : "") + "H_2O";
+                    CountO[0] += 1;
+                    CountH[0] += 2;
+                }
+                if (CountO[0] > CountO[1])
+                {
+                    _r2 += " " + (CountO[0] - CountO[1] > 1 ? CountO[0] - CountO[1] : "") + "H_2O";
+                    CountO[1] += 1;
+                    CountH[1] += 2;
+                }
+            }
+            if (CountO[0] != CountO[1] || CountH[0] != CountH[1])
+            {
+                Console.WriteLine("Couldn't Succesfully complete redox reaction...");
+                Environment.Exit(0);
+            }
+
             return Tuple.Create(_r1.Split(" "), _r2.Split(" "));
         }
 
@@ -555,18 +640,13 @@ namespace ChemSolver
             r1Split = tmpTuple.Item1;
             r2Split = tmpTuple.Item2;
 
-            OH_Accounting(r1Split, r2Split);            
+            tmpTuple = OH_Accounting(r1Split, r2Split);            
 
-            /*
-                Todo:
-                    Afstem Negativiteten:
-                        Basisk Opløsning:
-                            OH^-1
-                        Sur Opløsning:
-                            H^1
-                        - Ladning
-                        Afstem Det Sidste Med H_2O
-            */
+            string _r1 = ArrayToString(r1Split);
+            string _r2 = ArrayToString(r2Split);
+
+            Console.WriteLine(_r1);
+            Console.WriteLine(_r2);
         }
     }
 
