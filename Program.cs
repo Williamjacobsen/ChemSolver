@@ -230,12 +230,88 @@ namespace ChemSolver
             return n.Length != 0 ? Convert.ToInt32(n) : 0;
         }
 
+        private static int ToPositive(int n)
+        {
+            if (n < 0)
+            {
+                n = -n;
+            }
+            return n;
+        }
+
+        private static string ArrayToString(string[] array)
+        {
+            string tmp = "";
+            for (int i = 0; i < array.Length; i++)
+            {
+                tmp += array[i] + " ";
+            }
+
+            return tmp.Remove(tmp.Length - 1);
+        }
+
+        private static Tuple<string[], string[]> ChargeAccounting(string[] r1, string[] r2, int r1Charge, int r2Charge, string s)
+        {
+            string _r1 = ArrayToString(r1);
+            string _r2 = ArrayToString(r2);
+            if (s.ToString().ToLower()[0] == 's')
+            {
+                if (r1Charge < r2Charge)
+                {
+                    int difference = ToPositive(r1Charge) - ToPositive(r2Charge);
+                    _r1 = r1[0] + " " + r1[1] + " " + difference + "H^1";
+                }
+                else if (r1Charge > r2Charge)
+                {
+                    int difference = ToPositive(r2Charge) - ToPositive(r1Charge);
+                    _r2 = r2[0] + " " + r2[1] + " " + difference + "H^1";
+                }
+            }
+            else if (s.ToString().ToLower()[0] == 'b')
+            {
+                if (r1Charge > r2Charge)
+                {
+                    int difference = ToPositive(r1Charge) - ToPositive(r2Charge);
+                    _r1 = r1[0] + " " + r1[1] + " " + difference + "OH^-1";
+                }
+                else if (r1Charge < r2Charge)
+                {
+                    int difference = ToPositive(r2Charge) - ToPositive(r1Charge);
+                    _r2 = r2[0] + " " + r2[1] + " " + difference + "OH^-1";
+                }
+            }
+
+            return Tuple.Create(_r1.Split(" "), _r2.Split(" "));
+        }
+
+        private static Tuple<string[], string[]> OH_Accounting(string[] r1, string[] r2)
+        {
+            string _r1 = ArrayToString(r1);
+            string _r2 = ArrayToString(r2);
+            Console.WriteLine(_r1);
+            Console.WriteLine(_r2);
+            
+            return Tuple.Create(_r1.Split(" "), _r2.Split(" "));
+        }
+
         private static int GetMultiplier(string m)
         {
+            string tmp = "";
             int _;
-            if (Int32.TryParse(m[0].ToString(), out _))
+            for (int i = 0; i < m.Length; i++)
             {
-                return Convert.ToInt32(m[0].ToString());
+                if (Int32.TryParse(m[i].ToString(), out _))
+                {
+                    tmp += m[i];
+                }
+                else
+                {
+                    break;
+                }
+            }
+            if (tmp != "")
+            {
+                return Convert.ToInt32(tmp);
             }
             return 1;
         }
@@ -391,7 +467,6 @@ namespace ChemSolver
 
         private static void BalanceCharges(string r1, string r2, int r1Charge, int r2Charge)
         {
-            // get if basic or acidic solution
         }
 
         public static void Redox()
@@ -414,7 +489,11 @@ namespace ChemSolver
  ");
             Console.Write("Reaktion: ");
             string? r = Console.ReadLine();
+            Console.Write("Sur eller basisk opløsning (s/b): ");
+            string? s = Console.ReadLine();
+
             r = "MnO_4^-1 + NO_2^-1 -> MnO_2 + NO_3^-1";
+            s = "s";
 
             bool sep = false;
             string r1 = "";
@@ -471,6 +550,12 @@ namespace ChemSolver
             {
                 r2Charge +=  GetMultiplier(r2Split[i]) * Charge(r2Split[i]);
             }
+
+            tmpTuple = ChargeAccounting(r1Split, r2Split, r1Charge, r2Charge, s);
+            r1Split = tmpTuple.Item1;
+            r2Split = tmpTuple.Item2;
+
+            OH_Accounting(r1Split, r2Split);            
 
             /*
                 Todo:
