@@ -564,6 +564,7 @@ namespace ChemSolver
             Console.Write("Sur eller basisk opløsning (s/b): ");
             string? s = Console.ReadLine();
 
+            // examples : https://webkemi.dk/Reactions/Redox.htm 
             r = "MnO_4^-1 + NO_2^-1 -> MnO_2 + NO_3^-1";
             r = "Zn + Ag^1 -> Zn^2 + Ag";
             r = "MnO_4^-1 + I^-1 -> Mn^3 + I_2";
