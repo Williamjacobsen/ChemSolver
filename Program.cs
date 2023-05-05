@@ -294,12 +294,12 @@ namespace ChemSolver
             {
                 if (r1Charge < r2Charge)
                 {
-                    int difference = ToPositive(r1Charge) - ToPositive(r2Charge);
+                    int difference = ToPositive(r1Charge - r2Charge);
                     _r1 = r1[0] + " " + r1[1] + " " + difference + "H^1";
                 }
                 else if (r1Charge > r2Charge)
                 {
-                    int difference = ToPositive(r2Charge) - ToPositive(r1Charge);
+                    int difference = ToPositive(r2Charge - r1Charge);
                     _r2 = r2[0] + " " + r2[1] + " " + difference + "H^1";
                 }
             }
@@ -307,12 +307,12 @@ namespace ChemSolver
             {
                 if (r1Charge > r2Charge)
                 {
-                    int difference = ToPositive(r1Charge) - ToPositive(r2Charge);
+                    int difference = ToPositive(r1Charge - r2Charge);
                     _r1 = r1[0] + " " + r1[1] + " " + difference + "OH^-1";
                 }
                 else if (r1Charge < r2Charge)
                 {
-                    int difference = ToPositive(r2Charge) - ToPositive(r1Charge);
+                    int difference = ToPositive(r2Charge - r1Charge);
                     _r2 = r2[0] + " " + r2[1] + " " + difference + "OH^-1";
                 }
             }
@@ -352,26 +352,18 @@ namespace ChemSolver
                 CountH[1] += CountAtoms(r2[i], 'H');
             }
 
-            // O: 14, 13
-            // H: 2, 0
-            
-            while (CountO[0] != CountO[1])
+            if (CountO[0] < CountO[1])
             {
-                if (CountO[0] < CountO[1])
-                {
-                    _r1 += " " + (CountO[1] - CountO[0] > 1 ? CountO[1] - CountO[0] : "") + "H_2O";
-                    CountO[0] += 1;
-                    CountH[0] += 2;
-                }
-                if (CountO[0] > CountO[1])
-                {
-                    _r2 += " " + (CountO[0] - CountO[1] > 1 ? CountO[0] - CountO[1] : "") + "H_2O";
-                    CountO[1] += 1;
-                    CountH[1] += 2;
-                }
+                _r1 += " " + (CountO[1] - CountO[0] > 1 ? CountO[1] - CountO[0] : "") + "H_2O";
             }
-            if (CountO[0] != CountO[1] || CountH[0] != CountH[1])
+            else if (CountO[0] > CountO[1])
             {
+                _r2 += " " + (CountO[0] - CountO[1] > 1 ? CountO[0] - CountO[1] : "") + "H_2O";
+            }
+            else 
+            {
+                Console.WriteLine(_r1);
+                Console.WriteLine(_r2);
                 Console.WriteLine("Couldn't Succesfully complete redox reaction...");
                 Environment.Exit(0);
             }
@@ -530,7 +522,6 @@ namespace ChemSolver
                 }
                 change.Add(tmp);
             }
-
             change = ReverseList(change);
 
             for (int i = 0; i < change.Count; i++)
@@ -548,10 +539,6 @@ namespace ChemSolver
             }
 
             return Tuple.Create(r1Split, r2Split);
-        }
-
-        private static void BalanceCharges(string r1, string r2, int r1Charge, int r2Charge)
-        {
         }
 
         public static void Redox()
@@ -578,6 +565,8 @@ namespace ChemSolver
             string? s = Console.ReadLine();
 
             r = "MnO_4^-1 + NO_2^-1 -> MnO_2 + NO_3^-1";
+            r = "Zn + Ag^1 -> Zn^2 + Ag";
+            r = "MnO_4^-1 + I^-1 -> Mn^3 + I_2";
             s = "s";
 
             bool sep = false;
@@ -608,45 +597,65 @@ namespace ChemSolver
                 return;
             }
 
+            Console.WriteLine("\nReaktion: " + r);
+            Console.WriteLine("Opløsning: " + s);
+
             List<int> r1OxidationValues = new List<int>();
             List<int> r2OxidationValues = new List<int>();
 
+            Console.WriteLine("\n-OxidationValues-");
             for (int i = 0; i < r1Split.Length; i++)
             {
                 r1OxidationValues.Add(OxidationValue(showValue: false, molecule: r1Split[i]));
+                Console.WriteLine(r1Split[i] + " : " + r1OxidationValues[i].ToString());
             }
 
             for (int i = 0; i < r2Split.Length; i++)
             {
                 r2OxidationValues.Add(OxidationValue(showValue: false, molecule: r2Split[i]));
-            }
+                Console.WriteLine(r2Split[i] + " : " + r2OxidationValues[i].ToString());
+            } 
 
+            Console.WriteLine("\n-ElectronicAccounting-");
             Tuple<string[], string[]> tmpTuple = ElectronicAccounting(r1OxidationValues, r2OxidationValues, r1Split, r2Split);
             r1Split = tmpTuple.Item1;
             r2Split = tmpTuple.Item2;
 
+            Console.WriteLine(ArrayToString(r1Split));
+            Console.WriteLine(ArrayToString(r2Split));
+
+            Console.WriteLine("\n-Charges-");
             int r1Charge = 0;
             int r2Charge = 0;
             for (int i = 0; i < r1Split.Length; i++)
             {
                 r1Charge += GetMultiplier(r1Split[i]) * Charge(r1Split[i]);
             }
+            Console.WriteLine(ArrayToString(r1Split) + " : " + r1Charge.ToString());
+
             for (int i = 0; i < r2Split.Length; i++)
             {
                 r2Charge +=  GetMultiplier(r2Split[i]) * Charge(r2Split[i]);
             }
+            Console.WriteLine(ArrayToString(r2Split) + " : " + r2Charge.ToString());
 
+            Console.WriteLine("\n-ChargeAccounting-");
             tmpTuple = ChargeAccounting(r1Split, r2Split, r1Charge, r2Charge, s);
             r1Split = tmpTuple.Item1;
             r2Split = tmpTuple.Item2;
 
-            tmpTuple = OH_Accounting(r1Split, r2Split);            
+            Console.WriteLine(ArrayToString(r1Split));
+            Console.WriteLine(ArrayToString(r2Split));
 
-            string _r1 = ArrayToString(r1Split);
-            string _r2 = ArrayToString(r2Split);
+            Console.WriteLine("\n-OHAccounting-");
+            tmpTuple = OH_Accounting(r1Split, r2Split);  
+            r1Split = tmpTuple.Item1;
+            r2Split = tmpTuple.Item2;          
 
-            Console.WriteLine(_r1);
-            Console.WriteLine(_r2);
+            Console.WriteLine(ArrayToString(r1Split));
+            Console.WriteLine(ArrayToString(r2Split));
+
+            // fix 4I_2 (should be 2I_2) in ElectronicAccounting function
         }
     }
 
