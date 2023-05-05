@@ -528,14 +528,14 @@ namespace ChemSolver
             {
                 if (change[i] == 0 || change[i] == 1)
                     continue;
-                r1Split[i] = change[i] + r1Split[i];
+                r1Split[i] = change[i] / CountAtoms(r1Split[i], r1Split[i][0]) + r1Split[i];
             }
 
             for (int i = 0; i < change.Count; i++)
             {
                 if (change[i] == 0 || change[i] == 1)
                     continue;
-                r2Split[i] = change[i] + r2Split[i];
+                r2Split[i] = change[i] / CountAtoms(r2Split[i], r2Split[i][0]) + r2Split[i];
             }
 
             return Tuple.Create(r1Split, r2Split);
