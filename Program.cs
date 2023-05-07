@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Text.RegularExpressions;
 
 namespace ChemSolver
 {
@@ -9,8 +10,8 @@ namespace ChemSolver
         {
             Console.SetWindowSize(200, 50);
 
-            int option = UI.Menu(new string[] {"Periodic Table", "Redox reaktion", "Oxidationstal"});
-            switch (option) {
+            int option = UI.Menu(new string[] {"Periodiske system", "Redox reaktion", "Oxidationstal", "Organisk navngivning"});
+            switch (option) {   
                 case 0:
                     Chemistry.PeriodicTable();
                     break;
@@ -19,6 +20,9 @@ namespace ChemSolver
                     break;
                 case 2:
                     Chemistry.OxidationValue(showValue: true, molecule: "");
+                    break;
+                case 3:
+                    Chemistry.OrganicNaming();
                     break;
             }
         }
@@ -564,11 +568,17 @@ namespace ChemSolver
             Console.Write("Sur eller basisk opløsning (s/b): ");
             string? s = Console.ReadLine();
 
+            if (string.IsNullOrEmpty(r) || string.IsNullOrEmpty(s))
+            {
+                return;
+            }
+
             // examples : https://webkemi.dk/Reactions/Redox.htm 
-            r = "MnO_4^-1 + NO_2^-1 -> MnO_2 + NO_3^-1";
-            r = "Zn + Ag^1 -> Zn^2 + Ag";
-            r = "MnO_4^-1 + I^-1 -> Mn^3 + I_2";
-            s = "s";
+            // test case:
+            // r = "MnO_4^-1 + NO_2^-1 -> MnO_2 + NO_3^-1";
+            // r = "Zn + Ag^1 -> Zn^2 + Ag";
+            // r = "MnO_4^-1 + I^-1 -> Mn^3 + I_2";
+            // s = "s";
 
             bool sep = false;
             string r1 = "";
@@ -655,8 +665,310 @@ namespace ChemSolver
 
             Console.WriteLine(ArrayToString(r1Split));
             Console.WriteLine(ArrayToString(r2Split));
+        }
 
-            // fix 4I_2 (should be 2I_2) in ElectronicAccounting function
+        public static void OrganicNaming()
+        {
+            Console.Clear();
+            Console.WriteLine(@"             _  .-')                 ('-.         .-') _                             .-') _    ('-.     _   .-')                 .-') _                  
+            ( \( -O )               ( OO ).-.    ( OO ) )                           ( OO ) )  ( OO ).-.( '.( OO )_              ( OO ) )                 
+ .-'),-----. ,------.   ,----.      / . --. /,--./ ,--,' ,-.-')   .-----.       ,--./ ,--,'   / . --. / ,--.   ,--.) ,-.-') ,--./ ,--,'  ,----.          
+( OO'  .-.  '|   /`. ' '  .-./-')   | \-.  \ |   \ |  |\ |  |OO) '  .--./       |   \ |  |\   | \-.  \  |   `.'   |  |  |OO)|   \ |  |\ '  .-./-')       
+/   |  | |  ||  /  | | |  |_( O- ).-'-'  |  ||    \|  | )|  |  \ |  |('-.       |    \|  | ).-'-'  |  | |         |  |  |  \|    \|  | )|  |_( O- )      
+\_) |  |\|  ||  |_.' | |  | .--, \ \| |_.'  ||  .     |/ |  |(_//_) |OO  )      |  .     |/  \| |_.'  | |  |'.'|  |  |  |(_/|  .     |/ |  | .--, \      
+  \ |  | |  ||  .  '.'(|  | '. (_/  |  .-.  ||  |\    | ,|  |_.'||  |`-'|       |  |\    |    |  .-.  | |  |   |  | ,|  |_.'|  |\    | (|  | '. (_/      
+   `'  '-'  '|  |\  \  |  '--'  |   |  | |  ||  | \   |(_|  |  (_'  '--'\       |  | \   |    |  | |  | |  |   |  |(_|  |   |  | \   |  |  '--'  |       
+     `-----' `--' '--'  `------'    `--' `--'`--'  `--'  `--'     `-----'       `--'  `--'    `--' `--' `--'   `--'  `--'   `--'  `--'   `------'        ");
+
+            Console.Write("Molekyle Struktur: ");
+            string? OrganicChain = Console.ReadLine();
+            if (string.IsNullOrEmpty(OrganicChain))
+            {
+                return;
+            }
+
+            // test case: 
+            //string OrganicChain = "CH(CH)CH(cc)CH(ch)C(c)CC".ToLower();
+
+            string carbonChain = RemoveHydrogen(OrganicChain: OrganicChain);
+
+            Tuple<string, string> tmpHandleBanch = HandleBanch(carbonChain: carbonChain);
+            OrganicChain = tmpHandleBanch.Item1;
+            string branchNames = tmpHandleBanch.Item2;
+
+            Tuple<int, int> tmpCountAtoms = CountAtoms(OrganicChain: OrganicChain);
+            int CountC = tmpCountAtoms.Item1;
+            int CountBinding = tmpCountAtoms.Item2;
+
+            string OrganicStartName = GetOrganicStartName(OrganicChain.Length);
+
+            string endWord = CalculateEndWord(carbonChain: carbonChain);
+
+            if (CountBinding == 0)
+            {
+                Console.WriteLine(branchNames + OrganicStartName + endWord);
+                return;
+            }
+
+            Tuple<List<int>, List<int>> tmpOrganicBindingIndexLists = OrganicBindingIndexLists(carbonChain: carbonChain);
+            List<int> firstBindings = tmpOrganicBindingIndexLists.Item1;
+            List<int> lastBindings = tmpOrganicBindingIndexLists.Item2;
+            List<int> listIndex = new List<int>();
+
+            for (int i = 0; i < firstBindings.Count; i++)
+            {
+                if (firstBindings[i] != lastBindings[i])
+                {
+                    if (firstBindings[i] < lastBindings[i])
+                    {
+                        listIndex = firstBindings;
+                        break;
+                    }
+                    else
+                    {
+                        listIndex = lastBindings;
+                        break;
+                    }
+                }
+            }
+
+            string idxStr = "";
+            for (int i = 0; i < listIndex.Count; i++)
+            {
+                idxStr += listIndex[i] + ",";
+            }
+            idxStr = idxStr.Remove(idxStr.Length - 1);
+
+            Console.WriteLine(branchNames + OrganicStartName + idxStr + GetMultipleName(CountBinding) + endWord);
+        }
+
+        private static string ExtractDitgitsFromString(string s)
+        {
+            string tmp = "";
+            for (int i = 0; i < s.Length; i++)
+            {
+                if (char.IsDigit(s[i]))
+                {
+                    tmp += s[i];
+                }
+            }
+            return tmp;
+        }
+        
+        private static string GetOrganicStartName(int _length)
+        {
+            return new string[]{ "", "meth", "eth", "prop", "but", "pent", "hex", "hept", "oct", "non", "dec" }[_length];
+        }
+
+        private static string GetMultipleName(int amount)
+        {
+            return new string[]{ "", "", "di", "tri", "tetra", "penta", "hexa", "hepta", "octa", "non", "dec" }[amount];
+        }
+
+        private static Tuple<int, int> CountAtoms(string OrganicChain)
+        {
+            int CountC = 0;
+            int CountBinding = 0;
+            for (int i = 0; i < OrganicChain.Length; i++)
+            {
+                if (OrganicChain[i] == 'c')
+                {
+                    CountC++;
+                }
+                else if (OrganicChain[i] == '=' && OrganicChain[i + 1] == '=')
+                {
+                    // So that a triple binding will be counted as one
+                }
+                else if (OrganicChain[i] == '=')
+                {
+                    CountBinding++;
+                }
+
+            }
+            return Tuple.Create(CountC, CountBinding);
+        }
+
+        private static string RemoveHydrogen(string OrganicChain)
+        {
+            string tmpOrganicStr = "";
+            for (int i = 0; i < OrganicChain.Length; i++)
+            {
+                if (OrganicChain[i] != 'h')
+                {
+                    tmpOrganicStr += OrganicChain[i];
+                }
+            }
+            return tmpOrganicStr;
+        }
+
+        private static string PureCarbonChain(string OrganicChain)
+        {
+            string tmpOrganicStr = "";
+            for (int i = 0; i < OrganicChain.Length; i++)
+            {
+                if (OrganicChain[i] == 'c')
+                {
+                    tmpOrganicStr += OrganicChain[i];
+                }
+            }
+            return tmpOrganicStr;
+        }
+
+        private static Tuple<List<int>, List<int>> OrganicBindingIndexLists(string carbonChain)
+        {
+            int idx = 0;
+            int CountBinding = 0;
+            List<int> firstBindings = new List<int>();
+            List<int> lastBindings = new List<int>();
+            for (int i = 0; i < carbonChain.Length; i++)
+            {
+                if (carbonChain[i] == '=')
+                {
+                    firstBindings.Add(i - CountBinding);
+                    CountBinding++;
+                }
+            }
+            for (int i = carbonChain.Length - 1; i > 0; i--)
+            {
+                if (carbonChain[i] == '=')
+                {
+                    lastBindings.Add(idx);
+                }
+                else
+                {
+                    idx++;
+                }
+
+            }
+            return Tuple.Create(firstBindings, lastBindings);
+        }
+
+        private static List<int> SmallestIndexList(List<int> firstBindings, List<int> lastBindings)
+        {
+
+            List<int> numberIsSmallest = new List<int>();
+            for (int i = 0; i < firstBindings.Count; i++)
+            {
+                if (firstBindings[i] < lastBindings[i])
+                {
+                    numberIsSmallest.Add(firstBindings[i]);
+                }
+                if (lastBindings[i] < firstBindings[i])
+                {
+                    numberIsSmallest.Add(lastBindings[i]);
+                }
+            }
+            return numberIsSmallest;
+        }
+
+        private static string CalculateEndWord(string carbonChain)
+        {
+            string endWord = "an";
+            try
+            {
+                for (int i = 0; i < carbonChain.Length; i++)
+                {
+                    if (carbonChain[i] == '=' && endWord != "yn")
+                    {
+                        endWord = "en";
+                    }
+                    if (carbonChain[i] == '=' && carbonChain[i + 1] == '=')
+                    {
+                        endWord = "yn";
+                    }
+                }
+            }
+            catch (Exception) { }
+            return endWord;
+        }
+
+        private static Tuple<string, string> HandleBanch(string carbonChain)
+        {
+            List<int> branchIdx = new List<int>();
+            List<string> branch = new List<string>();
+            int carbonChainLength = 0;
+            string tmp = "";
+            bool isBranch = false;
+
+            for (int i = 0; i < carbonChain.Length; i++)
+            {
+                if (!isBranch && carbonChain[i] == 'c')
+                {
+                    carbonChainLength++;
+                }
+                else if (carbonChain[i] == ')')
+                {
+                    isBranch = false;
+                }
+                else if (carbonChain[i] == '(')
+                {
+                    isBranch = true;
+                    branchIdx.Add(carbonChainLength);
+                    for (int j = i + 1; j < carbonChain.Length; j++)
+                    {
+                        if (carbonChain[j] != ')')
+                        {
+                            tmp += carbonChain[j];
+                        }
+                        else
+                        {
+                            branch.Add(tmp);
+                            tmp = "";
+                            break;
+                        }
+                    }
+                }
+            }
+
+            string carbonChainBranchRemoved = Regex.Replace(carbonChain, @"\(.*?\)", "");
+
+            List<Tuple<string, int>> branchNamesIdx = new List<Tuple<string, int>>();
+            for (int i = 0; i < branchIdx.Count; i++)
+            {
+                branchNamesIdx.Add(Tuple.Create(GetOrganicStartName(branch[i].Length) + "yl", branchIdx[i]));
+            }
+
+            string idxStr = "";
+            string lastBranchName = "";
+            List<string> alreadyRanBranchNames = new List<string>();
+            List<string> idxStrList = new List<string>();
+            for (int i = 0; i < branchNamesIdx.Count; i++)
+            {
+                for (int j = 0; j < branchNamesIdx.Count; j++)
+                {
+                    if (lastBranchName == branchNamesIdx[j].Item1)
+                    {
+                        idxStr += branchNamesIdx[j].Item2 + ",";
+                    }
+                }
+                bool isRan = false;
+                for (int j = 0; j < alreadyRanBranchNames.Count; j++)
+                {
+                    if (alreadyRanBranchNames[j] == branchNamesIdx[i].Item1)
+                    {
+                        isRan = true;
+                        lastBranchName = "";
+                    }
+                }
+                if (!isRan)
+                {
+                    lastBranchName = branchNamesIdx[i].Item1;
+                    alreadyRanBranchNames.Add(lastBranchName);
+                }
+                
+                if (idxStr != "")
+                {
+                    idxStr = idxStr.Remove(idxStr.Length - 1);
+                    idxStr += "-";
+                    string nums = ExtractDitgitsFromString(idxStr);
+                    idxStrList.Add(idxStr + GetMultipleName(nums.Length) + branchNamesIdx[i - 1].Item1);
+                    idxStr = "";
+                }
+            }
+
+            idxStrList.RemoveAll(v => v == "");
+            string branchNames = string.Join("-", idxStrList);
+            return Tuple.Create(carbonChainBranchRemoved, branchNames);
         }
     }
 
