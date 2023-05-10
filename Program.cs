@@ -570,8 +570,8 @@ namespace ChemSolver
             // test case:
             // r = "MnO_4^-1 + NO_2^-1 -> MnO_2 + NO_3^-1";
             // r = "Zn + Ag^1 -> Zn^2 + Ag";
-            r = "MnO_4^-1 + I^-1 -> Mn^3 + I_2";
-            s = "s";
+            // r = "MnO_4^-1 + I^-1 -> Mn^3 + I_2";
+            // s = "s";
 
             bool sep = false;
             string r1 = "";
