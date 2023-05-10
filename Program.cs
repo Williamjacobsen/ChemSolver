@@ -10,7 +10,7 @@ namespace ChemSolver
         {
             Console.SetWindowSize(200, 50);
 
-            int option = UI.Menu(new string[] {"Periodiske system", "Redox reaktion", "Oxidationstal", "Organisk navngivning"});
+            int option = UI.Menu(new string[] {"Periodiske system", "Redoxreaktion", "Oxidationstal", "Organisk navngivning"});
             switch (option) {   
                 case 0:
                     Chemistry.PeriodicTable();
@@ -689,20 +689,28 @@ namespace ChemSolver
 
             // test case: 
             //string OrganicChain = "CH(CH)CH(cc)CH(ch)C(c)CC".ToLower();
+            //string OrganicChain = "CC=CCC".ToLower();
+            Console.WriteLine(OrganicChain);
 
             string carbonChain = RemoveHydrogen(OrganicChain: OrganicChain);
+            Console.WriteLine(carbonChain);
 
             Tuple<string, string> tmpHandleBanch = HandleBanch(carbonChain: carbonChain);
             OrganicChain = tmpHandleBanch.Item1;
             string branchNames = tmpHandleBanch.Item2;
+            Console.WriteLine(OrganicChain);
 
-            Tuple<int, int> tmpCountAtoms = CountAtoms(OrganicChain: OrganicChain);
+            Tuple<int, int> tmpCountAtoms = CountCarbonAndBindings(OrganicChain: OrganicChain);
             int CountC = tmpCountAtoms.Item1;
             int CountBinding = tmpCountAtoms.Item2;
 
-            string OrganicStartName = GetOrganicStartName(OrganicChain.Length);
+            Console.WriteLine(CountC);
+            Console.WriteLine(CountBinding);
+
+            string OrganicStartName = GetOrganicStartName(PureCarbonChain(OrganicChain).Length);
 
             string endWord = CalculateEndWord(carbonChain: carbonChain);
+            Console.WriteLine(endWord);
 
             if (CountBinding == 0)
             {
@@ -737,7 +745,10 @@ namespace ChemSolver
             {
                 idxStr += listIndex[i] + ",";
             }
-            idxStr = idxStr.Remove(idxStr.Length - 1);
+            if (idxStr.Length > 0)
+            {
+                idxStr = idxStr.Remove(idxStr.Length - 1);
+            }
 
             Console.WriteLine(branchNames + OrganicStartName + idxStr + GetMultipleName(CountBinding) + endWord);
         }
@@ -765,7 +776,7 @@ namespace ChemSolver
             return new string[]{ "", "", "di", "tri", "tetra", "penta", "hexa", "hepta", "octa", "non", "dec" }[amount];
         }
 
-        private static Tuple<int, int> CountAtoms(string OrganicChain)
+        private static Tuple<int, int> CountCarbonAndBindings(string OrganicChain)
         {
             int CountC = 0;
             int CountBinding = 0;
