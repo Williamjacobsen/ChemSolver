@@ -364,13 +364,6 @@ namespace ChemSolver
             {
                 _r2 += " " + (CountO[0] - CountO[1] > 1 ? CountO[0] - CountO[1] : "") + "H_2O";
             }
-            else 
-            {
-                Console.WriteLine(_r1);
-                Console.WriteLine(_r2);
-                Console.WriteLine("Couldn't Succesfully complete redox reaction...");
-                Environment.Exit(0);
-            }
 
             return Tuple.Create(_r1.Split(" "), _r2.Split(" "));
         }
@@ -577,8 +570,8 @@ namespace ChemSolver
             // test case:
             // r = "MnO_4^-1 + NO_2^-1 -> MnO_2 + NO_3^-1";
             // r = "Zn + Ag^1 -> Zn^2 + Ag";
-            // r = "MnO_4^-1 + I^-1 -> Mn^3 + I_2";
-            // s = "s";
+            r = "MnO_4^-1 + I^-1 -> Mn^3 + I_2";
+            s = "s";
 
             bool sep = false;
             string r1 = "";
@@ -1018,7 +1011,7 @@ namespace ChemSolver
  ||  |`-'| |  .-.  | |  .--' |  |   |  | .-._)   \  \ |  | |  |(|  '---.'  \     /__) |  .--' |  .  '.'      
 (_'  '--'\ |  | |  | |  `---.|  |   |  | \       /   `'  '-'  ' |      |    \   /     |  `---.|  |\  \       
    `-----' `--' `--' `------'`--'   `--'  `-----'      `-----'  `------'     `-'      `------'`--' '--'      
-Made by: TacK & Soren
+Made by: William Jacobsen & Søren Laursen
 
 Use up arrow, down arrow and enter to navigate.
 ");
