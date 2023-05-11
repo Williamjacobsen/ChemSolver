@@ -683,27 +683,20 @@ namespace ChemSolver
             // test case: 
             //string OrganicChain = "CH(CH)CH(cc)CH(ch)C(c)CC".ToLower();
             //string OrganicChain = "CC=CCC".ToLower();
-            Console.WriteLine(OrganicChain);
 
             string carbonChain = RemoveHydrogen(OrganicChain: OrganicChain);
-            Console.WriteLine(carbonChain);
 
             Tuple<string, string> tmpHandleBanch = HandleBanch(carbonChain: carbonChain);
             OrganicChain = tmpHandleBanch.Item1;
             string branchNames = tmpHandleBanch.Item2;
-            Console.WriteLine(OrganicChain);
 
             Tuple<int, int> tmpCountAtoms = CountCarbonAndBindings(OrganicChain: OrganicChain);
             int CountC = tmpCountAtoms.Item1;
             int CountBinding = tmpCountAtoms.Item2;
 
-            Console.WriteLine(CountC);
-            Console.WriteLine(CountBinding);
-
             string OrganicStartName = GetOrganicStartName(PureCarbonChain(OrganicChain).Length);
 
             string endWord = CalculateEndWord(carbonChain: carbonChain);
-            Console.WriteLine(endWord);
 
             if (CountBinding == 0)
             {
