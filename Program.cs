@@ -674,7 +674,7 @@ namespace ChemSolver
      `-----' `--' '--'  `------'    `--' `--'`--'  `--'  `--'     `-----'       `--'  `--'    `--' `--' `--'   `--'  `--'   `--'  `--'   `------'        ");
 
             Console.Write("Molekyle Struktur: ");
-            string? OrganicChain = Console.ReadLine();
+            string? OrganicChain = Console.ReadLine()?.ToLower();
             if (string.IsNullOrEmpty(OrganicChain))
             {
                 return;
