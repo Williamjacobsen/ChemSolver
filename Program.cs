@@ -8,7 +8,9 @@ namespace ChemSolver
     {   
         static void Main(string[] args)
         {
-            Console.SetWindowSize(200, 50);
+            try {
+                Console.SetWindowSize(200, 50);
+            } catch (Exception) {}
 
             int option = UI.Menu(new string[] {"Periodiske system", "Redoxreaktion", "Oxidationstal", "Organisk navngivning"});
             switch (option) {   
