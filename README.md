@@ -38,17 +38,20 @@ dotnet run
 
 > On some systems, the application may attempt to resize the console window. If you experience issues, remove or comment out `Console.SetWindowSize()` in `Program.cs`.
 
-## File Structure
+## Project Structure
 
-- `Program.cs` — Entry point and main menu navigation.
-- `Chemistry.cs` — Core chemical logic for:
-  - Periodic Table
-  - Redox Reactions
-  - Oxidation Numbers
-  - Organic Naming
-- `UI.cs` — Terminal-based user interface and menu control.
-- `JsonHandler.cs` — Utilities for parsing element data from JSON.
-- `PeriodicTable.json` — JSON file with periodic element data (required).
+- `Program.cs` — Contains all core code, including:
+
+  - `Program` — Entry point and main menu.
+  - `Chemistry` — Main chemistry logic:
+    - Periodic Table
+    - Redox Reactions
+    - Oxidation Numbers
+    - Organic Naming
+  - `UI` — Terminal-based user interface and menu navigation.
+  - `JsonHandler` — Utilities for loading and parsing JSON data.
+
+- `PeriodicTable.json` — JSON file containing periodic element data (required for the Periodic Table feature).
 
 ## Example Inputs
 
