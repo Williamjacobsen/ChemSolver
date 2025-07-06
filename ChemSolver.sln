@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChemSolver", "ChemSolver.csproj", "{6934795D-03BB-817F-3DB4-5D256A21C10C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6934795D-03BB-817F-3DB4-5D256A21C10C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6934795D-03BB-817F-3DB4-5D256A21C10C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6934795D-03BB-817F-3DB4-5D256A21C10C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6934795D-03BB-817F-3DB4-5D256A21C10C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A8456567-81DB-4CF9-9520-625391236432}
+	EndGlobalSection
+EndGlobal

@@ -1,8 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "Q/f43qR/0pjm1NPsvzu2MbJqkNu8/VX2cbcKsktBQ9OsECXfaiIWulcLcgj0osTAn3hBA/TD3i7puN9JAaFkZg==",
+  "dgSpecHash": "xdhYcdZVUPkpldZy/SXhnMBqxapvMB4G5M3/tsVxd92rD03LwhAk+qKa1fZX/KPrTkva7k3v2HoY+YPc3Xs3xA==",
   "success": true,
-  "projectFilePath": "C:\\Users\\villi\\source\\repos\\ChemSolver\\ChemSolver\\ChemSolver.csproj",
-  "expectedPackageFiles": [],
+  "projectFilePath": "C:\\Users\\villi\\OneDrive\\Dokumenter\\GitHub\\ChemSolver\\ChemSolver.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\villi\\.nuget\\packages\\microsoft.netcore.app.ref\\6.0.22\\microsoft.netcore.app.ref.6.0.22.nupkg.sha512",
+    "C:\\Users\\villi\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\6.0.22\\microsoft.windowsdesktop.app.ref.6.0.22.nupkg.sha512",
+    "C:\\Users\\villi\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\6.0.22\\microsoft.aspnetcore.app.ref.6.0.22.nupkg.sha512",
+    "C:\\Users\\villi\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\6.0.22\\microsoft.netcore.app.host.win-x64.6.0.22.nupkg.sha512"
+  ],
   "logs": []
 }
